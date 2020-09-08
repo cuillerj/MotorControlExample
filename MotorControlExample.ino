@@ -25,10 +25,11 @@
 */
 
 
-//#define debugOn
+//#define debugOn   // uncomment to get details on the serial link
+//#define plotterOn // uncomment to get graph on serial plotter (debugOn must be commented
+
 //#define debugPIDOn
-//#define plotterOn
-#define SRT
+//#define SRT
 /*
    encoders setup
 */
@@ -115,7 +116,7 @@ unsigned long SRTcount = 0;
 */
 #include <LookForString.h>
 #define commandnumber 10
-String commandList[commandnumber] = {"start", "stop", "s+", "s-", "breakOn", "breakOff", "t+", "t-", "clkw+", "clkw-"};
+String commandList[commandnumber] = {"start", "stop", "s+", "s-", "brakOn", "brakOff", "t+", "t-", "clkw+", "clkw-"};
 String *PcommandList[commandnumber];   // pointera array (to each command)
 LookForStr SerialInput (PcommandList, commandnumber);   // define the object
 
