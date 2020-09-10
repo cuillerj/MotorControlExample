@@ -72,7 +72,7 @@ WheelControl Wheels(wheelEncoderHoles, incoderHighValue, incoderLowValue, analog
 long wheeelCumulative = 0;            // cumulative count of the left holes used for dynamic speed adjustment
 //unsigned long prevCheckHoles = 0;
 unsigned int iMotorMaxrpm = maxRPS * 60;
-#define iSlowPWM 80
+#define iSlowPWM 80    // under this value the motor will not rotate and the system can enter in a locking state
 boolean bClockwise = false; //Need to turn counter-clockwise on left motor to get forward
 Motor motor(motorENA, motorIN1, motorIN2, iMotorMaxrpm, iSlowPWM); // define right Motor
 /*
@@ -83,8 +83,7 @@ Motor motor(motorENA, motorIN1, motorIN2, iMotorMaxrpm, iSlowPWM); // define rig
 #define KiRegister 1   // Ki integral register position
 #define KdRegister 2   // Kd derivative register position
 #define sizeOfKx 3     // register size
-//#define optimalHighStraightSpeed 142
-//#define optimalLowStraightSpeed 130
+
 double Kx[sizeOfKx] = {1.2, 1.5, 0.05};  // registers that contain PID Kx
 #define mMinOut 0    // 
 #define mMaxOut 1
