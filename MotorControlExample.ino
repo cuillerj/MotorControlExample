@@ -53,7 +53,7 @@ unsigned int breakPulse = 0;  // if breakOn true
 unsigned int incoderHighValue = 500; // define value mV above that signal is high for analogEncoderInput
 unsigned int incoderLowValue = 50;  // define value mV below that signal is low for analogEncoderInput
 volatile uint8_t wheelIdInterruption = 0xff; // if not 0xff a wheelinterruption has to be analysed
-boolean encodersToStop = false;   // flag used to delay stopping encoders after stopping motors
+volatile boolean encodersToStop = false;   // flag used to delay stopping encoders after stopping motors
 boolean encodersStopped = true;   // encoders status
 unsigned long nbHolesRequested;  // nmuber of done revolutions * 100
 WheelControl Wheels(wheelEncoderHoles, incoderHighValue, incoderLowValue, analogEncoderInput,   // define encoders: holes number, analog high value, analog low value, analog GPIO for encoder number 0
@@ -104,7 +104,7 @@ uint8_t rawCommand[20];
    timers and counters
 */
 unsigned long timePID = 0;
-unsigned long timeAfterStopMotors = 0;
+volatile unsigned long timeAfterStopMotors = 0;
 unsigned long debugPIDTimer = 0;
 unsigned long startMotorTime = 0;
 unsigned long stopMotorTime = 0;
