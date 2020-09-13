@@ -25,10 +25,10 @@
 */
 
 
-//#define debugOn   // uncomment to get details on the serial link
+#define debugOn   // uncomment to get details on the serial link
 //#define plotterOn // uncomment to get graph on serial plotter (debugOn must be commented
 
-//#define debugPIDOn
+#define debugPIDOn
 //#define SRT
 /*
    encoders setup
@@ -92,7 +92,7 @@ double mInput, mOutput, mSetpoint;
 #define sizeOfOutlim 3
 int outLimit[sizeOfOutlim] = {iSlowPWM, 255, 200}; // PWM {minOut,maxOut, startOut}
 PID mPID(&mInput, &mOutput, &mSetpoint, Kx[KpRegister], Kx[KiRegister], Kx[KdRegister], DIRECT);
-boolean PIDactive = false;
+volatile boolean PIDactive = false;
 /*
    serial link
 */
@@ -159,6 +159,7 @@ void loop() {
   count++;
   if (wheelIdInterruption != 0xff)                   // we got wheel encoder interruption
   {
+    WheelThresholdReached(wheelIdInterruption);                      // call the threshold analyse
 #if defined(debugOn)
     Serial.print("wheels interrupt: ");
     Serial.println(wheelIdInterruption);

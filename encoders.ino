@@ -1,10 +1,13 @@
 void WheelInterrupt()   // wheel controler set a software interruption due to threshold reaching
 {
-  detachInterrupt(digitalPinToInterrupt(wheelPinInterruptIn));
+  // detachInterrupt(digitalPinToInterrupt(wheelPinInterruptIn));
   wheelIdInterruption = Wheels.GetLastWheelInterruptId();         // get which wheel Id reached the threshold to be analysed in the next loop
+  #if defined(debugOn)
+  Serial.println(wheelIdInterruption);
+  #endif
   Wheels.ClearThreshold(wheelIdInterruption);                      // clear the threshold flag to avoid any more interruption
-  WheelThresholdReached(wheelIdInterruption);                      // call the threshold analyse
-  attachInterrupt(digitalPinToInterrupt(wheelPinInterruptIn), WheelInterrupt, FALLING);
+  PIDactive = false;
+  //  attachInterrupt(digitalPinToInterrupt(wheelPinInterruptIn), WheelInterrupt, FALLING);
 }
 void WheelThresholdReached( uint8_t wheelId)
 {
