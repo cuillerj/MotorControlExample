@@ -1,10 +1,10 @@
 void TurnPIDOn()
 {
-
+  pwmMode = false;
   mPID.SetMode(AUTOMATIC);
   mPID.SetOutputLimits(outLimit[mMinOut], outLimit[mMaxOut]);
   SetPIDKx();
-  SetPIDSampleTime(delayMiniBetweenHoles / 3);
+  SetPIDSampleTime(3 * delayMiniBetweenHoles);
   PIDactive = true;
 #if defined(debugOn)
   {
@@ -30,35 +30,49 @@ void SetPIDKx()
     Serial.print(outLimit[mMinOut]);
   }
 #endif
-
 }
+
 void ComputePID()
 {
-  float speedMotor = Wheels.GetTurnSpeed(mWheelId) * 100;
-  mInput = speedMotor;
+  mInput = Wheels.GetTurnSpeed(mWheelId) * 100;
   mPID.Compute();
-  motor.AdjustMotorPWM(int(mOutput));
-  timePID = millis();
+  motor.AdjustMotorPWM(round(mOutput));
+
 #if defined(debugPIDOn)
+#ifndef plotterOn
+  if (millis() >= timePID +  25000. / (mSetpoint))
   {
-    if (millis() > debugPIDTimer + 50) {
-      Serial.print("mIn:");
-      Serial.print(mInput);
-      Serial.print(" mOU:");
-      Serial.print(mOutput);
-      Serial.print(" setP:");
-      Serial.println(mSetpoint);
-      debugPIDTimer = millis();
-    }
+    //   if (millis() > debugPIDTimer + 50) {
+    Serial.print("mIn:");
+    Serial.print(mInput);
+    Serial.print(" mOU:");
+    Serial.print(mOutput);
+    Serial.print(" setP:");
+    Serial.println(mSetpoint);
+    debugPIDTimer = millis();
+    //
   }
 #endif
-#if defined(plotterOn)
-  Serial.print(mInput);
-  Serial.print("\t");
-  Serial.println(mSetpoint);
 #endif
-}
-void SetPIDSampleTime(double sampTime)
-{
-  mPID.SetSampleTime(sampTime);
-}
+#if defined(plotterOn)
+  if (millis() >= timePID +  25000. / (mSetpoint))
+  {
+#if defined(debugPIDOn)
+    Serial.print(mOutput);
+    Serial.print("\t");
+    Serial.print(mInput);
+    Serial.print("\t");
+    Serial.println(mSetpoint);
+#else
+    Serial.print(mInput);
+    Serial.print("\t");
+    Serial.println(mSetpoint);
+#endif;
+    timePID = millis();
+  }
+#endif
+  }
+  void SetPIDSampleTime(double sampTime)
+  {
+    mPID.SetSampleTime(sampTime);
+  }

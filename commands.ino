@@ -65,7 +65,10 @@ void ReadCommand() {
       Serial.print(" clockwise:");
       Serial.println(bClockwise);
       break;
-
+    case 10:
+      Serial.println(" detGain");
+      StartPWM();
+      break;
   }
   if (incomingByteNomber >= sizeof(rawCommand)) {
     Serial.println("too long input");

@@ -15,7 +15,7 @@ void StartMotors()
 #endif
     //  mSaveWheelInterrupt = 0;
     double startPWM = outLimit[mStartOut];
-    SRTcount=1;
+    SRTcount = 1;
     startMotorTime = millis();
     motor.RunMotor(bClockwise,  startPWM);
   }
@@ -29,10 +29,25 @@ void StopMotors()
 #endif
   stopMotorTime = millis();
   PIDactive = false;
-  timePID = millis();
+
 }
 void ReverseMotors()
 {
   Wheels.StartWheelPulse(breakPulse);
   motor.RunMotor(!bClockwise,  255);
+}
+
+void StartPWM()
+{
+  pwmMode = true;
+  int startPWM = 210;
+  StartEncoders();
+  pwmModeTimer = millis();
+  motor.RunMotor(bClockwise,  startPWM);
+#if defined(debugOn)
+  Serial.print("motor start");
+#endif
+  startMotorTime = millis();
+  PIDactive = false;
+
 }

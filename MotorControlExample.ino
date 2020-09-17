@@ -8,7 +8,7 @@
       if breakOn motor is briefly reversed to reduce inertia effect
 
    Use serial monitor with or without debugOn and debugPIDOn to get more or less data
-   Use serial plotter with plotterOn to get speed graph
+   Use serial plotter with plotterOn to get speed graph or plotterOn and debugPIDOn to get both graph speed and PWM
 
 */
 
@@ -25,10 +25,10 @@
 */
 
 
-#define debugOn   // uncomment to get details on the serial link
+//#define debugOn   // uncomment to get details on the serial link
 //#define plotterOn // uncomment to get graph on serial plotter (debugOn must be commented
 
-#define debugPIDOn
+//#define debugPIDOn
 //#define SRT
 /*
    encoders setup
@@ -84,7 +84,7 @@ Motor motor(motorENA, motorIN1, motorIN2, iMotorMaxrpm, iSlowPWM); // define rig
 #define KdRegister 2   // Kd derivative register position
 #define sizeOfKx 3     // register size
 
-double Kx[sizeOfKx] = {1.2, 1.5, 0.05};  // registers that contain PID Kx
+float Kx[sizeOfKx] = {1.2, 2., 0.1};  // registers that contain PID Kx
 #define mMinOut 0    // 
 #define mMaxOut 1
 #define mStartOut 2
@@ -93,6 +93,7 @@ double mInput, mOutput, mSetpoint;
 int outLimit[sizeOfOutlim] = {iSlowPWM, 255, 200}; // PWM {minOut,maxOut, startOut}
 PID mPID(&mInput, &mOutput, &mSetpoint, Kx[KpRegister], Kx[KiRegister], Kx[KdRegister], DIRECT);
 volatile boolean PIDactive = false;
+boolean pwmMode = false;
 /*
    serial link
 */
@@ -110,12 +111,14 @@ unsigned long startMotorTime = 0;
 unsigned long stopMotorTime = 0;
 unsigned int count = 0;
 unsigned long SRTcount = 0;
+unsigned long pwmModeTimer = 0;
+float lastSpeed = 0;
 /*
   serial commands setup
 */
 #include <LookForString.h>
-#define commandnumber 10
-String commandList[commandnumber] = {"start", "stop", "s+", "s-", "brakOn", "brakOff", "t+", "t-", "clkw+", "clkw-"};
+#define commandnumber 11
+String commandList[commandnumber] = {"start", "stop", "s+", "s-", "brakOn", "brakOff", "t+", "t-", "clkw+", "clkw-", "detGain"};
 String *PcommandList[commandnumber];   // pointera array (to each command)
 LookForStr SerialInput (PcommandList, commandnumber);   // define the object
 
@@ -125,6 +128,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
+  delay(200);
   pinMode(encoderPower, OUTPUT);
   digitalWrite(encoderPower, 0);
   pinMode(oscilloTrigger, OUTPUT);
@@ -132,7 +136,7 @@ void setup() {
   delay(100);
   pinMode(wheelPinInterruptIn, INPUT_PULLUP);
   pinMode(wheelPinInterruptOut, OUTPUT);
-  nbHolesRequested = 50 * wheelEncoderHoles;
+  nbHolesRequested = 200 * wheelEncoderHoles;
   for (int i = 0; i < commandnumber ; i++)
   {
     PcommandList[i] = &commandList[i];
@@ -140,9 +144,20 @@ void setup() {
   SerialInput.InitCommandsList(PcommandList, commandnumber);
   mSetpoint = defaultSetPoint;
 #if defined(plotterOn)
+#if defined(debugPIDOn)
+  Serial.print("mOut");
+  Serial.print("\t");
   Serial.print("speed");
   Serial.print("\t");
   Serial.println("mSetpoint");
+#endif
+#endif
+#if defined(plotterOn)
+#if !defined(debugPIDOn)
+  Serial.print("Speed");
+  Serial.print("\t");
+  Serial.println("setpoint");
+#endif
 #endif
 #ifndef plotterOn
   Serial.print("commands:");
@@ -186,7 +201,7 @@ void loop() {
   if (!encodersStopped && encodersToStop && millis() > timeAfterStopMotors + 1000) {
     StopEncoders();
   }
-  if (PIDactive && millis() >= timePID + mSetpoint * wheelEncoderHoles / 200)
+  if (PIDactive)
   {
     ComputePID();
   }
@@ -226,4 +241,12 @@ void loop() {
 
   }
 #endif
+  if (pwmMode && millis() > pwmModeTimer + 100) {
+    Serial.println(Wheels.GetTurnSpeed(mWheelId) * 100);
+    pwmModeTimer = millis();
+    if (millis() > startMotorTime + 10000) {
+      pwmMode = false;
+      StopMotors();
+    }
+  }
 }
