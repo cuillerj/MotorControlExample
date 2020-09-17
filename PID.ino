@@ -34,7 +34,10 @@ void SetPIDKx()
 
 void ComputePID()
 {
-  mInput = Wheels.GetTurnSpeed(mWheelId) * 100;
+  if (millis() >= timePID +  25000. / (mSetpoint))  // update speed every 1/4 turn
+  {
+    mInput = Wheels.GetTurnSpeed(mWheelId) * 100;
+  }
   mPID.Compute();
   motor.AdjustMotorPWM(round(mOutput));
 
