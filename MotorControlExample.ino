@@ -28,7 +28,7 @@
 //#define debugOn   // uncomment to get details on the serial link
 //#define plotterOn // uncomment to get graph on serial plotter (debugOn must be commented
 
-//#define debugPIDOn
+#define debugPIDOn
 //#define SRT
 /*
    encoders setup
@@ -37,13 +37,17 @@
 #define mWheelId 0       // will use the first encoder (wheelControl can support up to 4 encoders)
 #define analogEncoderInput A8   // analog input encoder GPIO
 #define encoderPower 4   // GPIO used to power on the encoders
-#define maxRPS 4.       // maximum speed rotation rounds per second
-#define minRPS 2.       // minimum speed rotation rounds per second
-#define defaultRPS 3.   // default speed rotation rounds per second
+//#define maxRPS 4.       // maximum speed rotation rounds per second
+//#define minRPS 2.       // minimum speed rotation rounds per second
+//#define defaultRPS 3.   // default speed rotation rounds per second
+#define maxRPS 2.   // maximum speed rotation rounds per second
+#define minRPS 1.     // minimum speed rotation rounds per second
+#define defaultRPS 1.5 // default speed rotation rounds per second
 #define defaultSetPoint defaultRPS*100  // speed is multiplied by 100 for PID
 #define wheelPinInterruptIn 3    // used by sotfware interrupt when rotation reach threshold > wheelPinInterruptIn and wheelPinInterruptOut must be wired together
 #define wheelPinInterruptOut 7    // used by sotfware interrupt when rotation reach threshold > wheelPinInterruptIn and wheelPinInterruptOut must be wired together
-#define wheelEncoderHoles 12  // number of holes of the encoder wheel
+//#define wheelEncoderHoles 12  // number of holes of the encoder wheel
+#define wheelEncoderHoles 30  // number of holes of the encoder wheel
 #define delayMiniBetweenHoles  (1000./(maxRPS*wheelEncoderHoles))  //  delay millis second between 2 encoder holes at the maximum speed 
 #define delayMaxBetweenHoles  (1000/(minRPS*wheelEncoderHoles))*1.1  //  delay millis second between 2 encoder holes at the minimum s
 #define oscilloTrigger 53     // GPIO use to trigger the oscilloscope
@@ -72,7 +76,7 @@ WheelControl Wheels(wheelEncoderHoles, incoderHighValue, incoderLowValue, analog
 long wheeelCumulative = 0;            // cumulative count of the left holes used for dynamic speed adjustment
 //unsigned long prevCheckHoles = 0;
 unsigned int iMotorMaxrpm = maxRPS * 60;
-#define iSlowPWM 80    // under this value the motor will not rotate and the system can enter in a locking state
+#define iSlowPWM 20    // under this value the motor will not rotate and the system can enter in a locking state
 boolean bClockwise = false; //Need to turn counter-clockwise on left motor to get forward
 Motor motor(motorENA, motorIN1, motorIN2, iMotorMaxrpm, iSlowPWM); // define right Motor
 /*
@@ -136,7 +140,7 @@ void setup() {
   delay(100);
   pinMode(wheelPinInterruptIn, INPUT_PULLUP);
   pinMode(wheelPinInterruptOut, OUTPUT);
-  nbHolesRequested = 200 * wheelEncoderHoles;
+  nbHolesRequested = 50 * wheelEncoderHoles;
   for (int i = 0; i < commandnumber ; i++)
   {
     PcommandList[i] = &commandList[i];

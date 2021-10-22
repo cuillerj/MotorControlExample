@@ -22,7 +22,8 @@ void WheelThresholdReached( uint8_t wheelId)
     timeAfterStopMotors = millis();
     encodersToStop = true;                               // to keep wheel ecoders running a little bit
     if (breakOn) {
-      ReverseMotors();
+    //  ReverseMotors();
+            BreakMotors();
     }
     else {
       StopMotors();

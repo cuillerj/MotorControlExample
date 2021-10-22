@@ -36,7 +36,11 @@ void ReverseMotors()
   Wheels.StartWheelPulse(breakPulse);
   motor.RunMotor(!bClockwise,  255);
 }
-
+void BreakMotors()
+{
+  Wheels.StartWheelPulse(breakPulse);
+  motor.BreakMotor();
+}
 void StartPWM()
 {
   pwmMode = true;
