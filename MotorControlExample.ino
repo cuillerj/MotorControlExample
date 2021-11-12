@@ -54,8 +54,8 @@
 boolean breakOn = false;      // true if breaking is needed when threshold is reached
 unsigned int breakPulse = 0;  // if breakOn true
 #define breakPulseRatio 4 // if breakOn true > need to be fitted with the hardware to adjust breaking
-unsigned int incoderHighValue = 500; // define value mV above that signal is high for analogEncoderInput
-unsigned int incoderLowValue = 50;  // define value mV below that signal is low for analogEncoderInput
+unsigned int incoderHighValue = 500; // (1024 means 5v)  above that signal is high for analogEncoderInput
+unsigned int incoderLowValue = 50;  // (1024 means 5v)  below that signal is low for analogEncoderInput
 volatile uint8_t wheelIdInterruption = 0xff; // if not 0xff a wheelinterruption has to be analysed
 volatile boolean encodersToStop = false;   // flag used to delay stopping encoders after stopping motors
 boolean encodersStopped = true;   // encoders status
